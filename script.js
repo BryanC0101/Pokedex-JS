@@ -1,8 +1,8 @@
-const url = "https://pokeapi.co/api/v2/pokemon/ditto";
-const inputArea = document.getElementById("inputArea");
+const url = "https://pokeapi.co/api/v2/pokemon";
 const box = document.getElementById("box");
+const types = document.querySelector(".types");
 const colors = {
-        fire: "#FD7D24",
+    fire: "#FD7D24",
     water: "#4592C4",
     grass: "#9BCC50",
     electric: "#EED535",
@@ -21,33 +21,78 @@ const colors = {
     steel: "#9EB7B8",
     flying: "#3DC7EF"
 }
-
-
-
-inputArea.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        procuraPokemon();
-    }
-});
-
-function procuraPokemon() {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${inputArea.value}`)
-    .then(response => response.json())
-    .then(data => {
-    console.log(data);
-    const type = data.types[0].type.name;
-    box.style.display = "flex";
-    box.style.background = colors[type];
-    box.innerHTML = `
-        <div class="left-side">
-            <h1>${data.species.name}</h1>
-            <p>${data.types[0].type.name}</p>
-
-        </div>
-        <div class="right-side">
-            <img src="${data.sprites.other.dream_world.front_default}" alt="POKEMON">
-        </div>
-        `;
-
-});
+const typeEmojis = {
+    all: "◾",
+    fire: "🔥",
+    water: "💧",
+    grass: "🌿",
+    electric: "⚡",
+    poison: "☠️",
+    bug: "🐛",
+    normal: "⚪",
+    ground: "🌍",
+    fairy: "✨",
+    fighting: "🥊",
+    psychic: "🔮",
+    rock: "🪨",
+    ghost: "👻",
+    ice: "❄️",
+    dragon: "🐉",
+    dark: "🌑",
+    steel: "⚙️",
+    flying: "🕊️"
 }
+
+Object.entries(typeEmojis).forEach(([type, emoji]) => {
+    types.innerHTML += `
+    <button class="type-btn">
+    ${emoji} ${type}
+    </button>
+    `;
+});
+
+
+
+fetch(`https://pokeapi.co/api/v2/pokemon`)
+.then(response => response.json())
+.then(data => {
+
+    data.results.forEach(element => {
+
+        fetch(`https://pokeapi.co/api/v2/pokemon/${element.name}?limit=151`)
+        .then(response => response.json())
+        .then(pokemon => {
+
+            const type = pokemon.types[0].type.name;
+            const color = colors[type];
+
+            box.innerHTML += `
+                <div class="card" style="background:${color}">
+                <div id="left-side">
+                    <h1>${pokemon.id}</h1>
+                    <h2>${pokemon.name}</h2>
+                    <p>${type}</p>
+                </div>
+                    <img src="${pokemon.sprites.front_default}" />
+                </div>
+            `;
+        });
+
+
+    })
+})
+
+
+
+
+
+
+
+
+// inputArea.addEventListener("keydown", (event) => {
+//     if (event.key === "Enter") {
+//         procuraPokemon();
+//     }
+// });
+
+
